@@ -1,0 +1,56 @@
+#!/bin/bash
+
+################################################################
+#                                                              #
+# Instalador e atualizador do 4k Video Downloader no Slackware #
+#                                                              #
+# By Mauricio Ferrari                                          #
+#                                                              #
+#                                                              #
+# Não precisa ser root.                                        #
+#                                                              #
+################################################################
+
+
+dir="_Packages"
+prg="4kvideodownloader"
+desk="$HOME/.local/share/applications"
+
+[ -e "../_PACKAGES" ] && dir="../_PACKAGES" || mkdir -p $dir # Isso aqui é pra mim
+
+cd $dir
+
+cwd="$PWD"
+
+link0="https://www.4kdownload.com/downloads/34"
+
+head="105"
+tail="25"
+
+version="$(grep -Eom1 "([0-9]+[.]){2}[0-9]+" <(tail "-$tail" <(head "-$head" <(links -dump "$link0"))))"
+
+link1="https://dl.4kdownload.com/app/4kvideodownloader_${version}_amd64.tar.bz2"
+link2="https://static.4kdownload.com/main/img/redesign/videodownloader.b9996289c0e2.svg"
+pkg=${link1##*/}
+
+wget -c "$link1"
+
+[ ! -e "$prg" ] && tar -jxvf "$pkg"
+
+cd "$prg" || exit 0
+
+[ ! -e "$prg.svg" ] && wget -O "$prg.svg" -c "$link2"
+
+[ -e "$desk/$prg.desktop" ] && exit 0
+
+echo "[Desktop Entry]
+Name=4k Video Downloader
+GenericName=4k Video Downloader
+Comment=Video Downloader
+Exec=$cwd/$prg/$prg.sh
+Icon=$cwd/$prg/$prg.svg
+Type=Application
+Terminal=false
+Categories=Application;Network;" > "$desk/$prg.desktop"
+
+exit 0
