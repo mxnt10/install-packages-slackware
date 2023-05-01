@@ -16,9 +16,9 @@ dir="_Packages"
 prg="4kvideodownloader"
 desk="$HOME/.local/share/applications"
 
-[ -e "../_PACKAGES" ] && dir="../_PACKAGES" || mkdir -p $dir # Isso aqui é pra mim
+[ -e "../_PACKAGES" ] && dir="../_PACKAGES" || mkdir -p "$dir" # Isso aqui é pra mim
 
-cd $dir
+cd "$dir"
 
 cwd="$PWD"
 
