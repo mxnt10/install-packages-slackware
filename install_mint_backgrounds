@@ -1,0 +1,62 @@
+#!/bin/bash
+
+########################################################################
+#                                                                      #
+# Instalador de pacotes de papéis de parede do Linux Mint no Slackware #
+#                                                                      #
+# By Mauricio Ferrari                                                  #
+#                                                                      #
+#                                                                      #
+# Precisa ser root.                                                    #
+#                                                                      #
+########################################################################
+
+
+[ $UID != 0 ] && { echo -e "\nExecute como Root !\n"; exit 1; }
+
+
+dir="_MintBackgrounds"
+
+[ -e "../$dir" ] && dir="../$dir" || { mkdir -p "$dir"; chown 1000:users "$dir"; } # Isso aqui é pra mim
+
+cd "$dir"
+
+exception="debian helena isadora julia katya katya-extra lisa lisa-extra maya maya-extra nadia nadia-extra retro xfce"
+
+name="mint-backgrounds"
+link0="http://packages.linuxmint.com/pool/main/m"
+
+list="$(grep -Eo "$name-[aA-zZ]+" <(links -dump "$link0"))"
+
+cd "/var/log/packages"
+lst=$(printf "%s\n" *)
+cd -
+
+for i in $list; {
+
+    test -n "$(grep "${i##*[-]}" <<< "$exception")" && continue;
+
+    link1="$link0/$i"
+
+    pkg=($(sort -nr <(grep -Eo "$i[_]([0-9]+[.])+[0-9]+[_]all[.]deb" <(links -dump "$link1"))))
+
+    link2="$link1/${pkg[0]}"
+
+    test -n "$(grep -Eo "${pkg%[.]*}" <<< "$lst")" && continue;
+
+    wget -c "$link2"
+
+    [ -e "$pkg" ] && {
+        ar -x "$pkg" || continue;
+        rm control.tar.?z* debian-binary
+    } || continue;
+
+    data=data.tar.?z*
+
+    mv $data "${pkg%[.]*}.$(sed "s/data.\|ar.\|2\|ma//g" <(echo $data))"
+
+    chown 1000:users ${pkg%[.]*}.t?z
+    /sbin/upgradepkg --install-new ${pkg%[.]*}.t?z
+}
+
+exit 0
