@@ -1,0 +1,66 @@
+#!/bin/bash
+
+###############################################################
+#                                                             #
+# Instalador e atualizador do programa CLion EAP no Slackware #
+#                                                             #
+# By Mauricio Ferrari                                         #
+#                                                             #
+#                                                             #
+# Não precisa ser root.                                       #
+#                                                             #
+###############################################################
+
+
+dir="_Packages"
+desk="$HOME/.local/share/applications"
+
+[ -e "../_PACKAGES" ] && dir="../_PACKAGES" || mkdir -p "$dir" # Isso aqui é pra mim
+
+cd "$dir"
+
+cwd="$PWD"
+
+
+function desktop_gen
+{
+
+local="$cwd/clion-$1/bin"
+
+echo "[Desktop Entry]
+Name=CLion
+GenericName=CLion
+Comment=IDE
+Exec=$local/clion.sh
+Icon=$local/clion.svg
+Type=Application
+Terminal=false
+Categories=Development;IDE;" > "$desk/clion.desktop"
+
+}
+
+
+link0="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=clion-eap"
+
+version=( $(grep -Eo "([0-9]+[.])+[0-9]+" <(links -dump "$link0")) )
+
+
+[ -d "CLion-${version[0]}" ] && [ -d "CLion-${version[1]}" ] && exit 0
+
+
+link1="https://download.jetbrains.com/cpp/CLion-${version[0]}.tar.gz"
+
+wget -c "$link1" && {
+
+    tar -xzvf "CLion-${version[0]}.tar.gz"
+    desktop_gen "${version[0]}"
+
+} || {
+
+    wget -c "${link1/${version[0]}/${version[1]}}" || exit 1
+    tar -xzvf "CLion-${version[1]}.tar.gz"
+    desktop_gen "${version[1]}"
+
+}
+
+exit 0

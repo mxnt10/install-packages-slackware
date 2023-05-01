@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#######################################################
+#                                                     #
+# Instalador e atualizador do VirtualBox no Slackware #
+#                                                     #
+# By Mauricio Ferrari                                 #
+#                                                     #
+#                                                     #
+# Não precisa ser root.                               #
+#                                                     #
+#######################################################
