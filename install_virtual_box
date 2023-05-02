@@ -10,3 +10,32 @@
 # Não precisa ser root.                               #
 #                                                     #
 #######################################################
+
+
+dir="_Packages"
+
+[ -e "../_PACKAGES" ] && dir="../_PACKAGES" || { mkdir -p "$dir"; chown 1000:users "$dir"; } # Isso aqui é pra mim
+
+cd "$dir"
+
+
+link0="https://download.virtualbox.org/virtualbox"
+
+version="$(grep -Eo "([0-9]+[.])+[0-9]+" <(links -dump "$link0/LATEST-STABLE.TXT"))"
+
+[ "$(grep -Eo "([0-9]+[.])+[0-9]+" <(virtualbox --help))" == "$version" ] && exit 0
+
+
+link1="$link0/$version"
+
+pkgs=( $(grep -Eo "(Oracle_VM_)*VirtualBox(_Extension_Pack)*[-]$version[-][0-9]+(-Linux_amd64.run|.vbox-extpack)" <(links -dump "$link1")) )
+
+wget -c "$link1/${pkgs[0]}" "$link1/${pkgs[1]}"
+
+chmod +x "${pkgs[1]}"
+
+sudo ./"${pkgs[1]}" --target "/var/tmp" --accept
+
+virtualbox "${pkgs[0]}"
+
+exit 0
