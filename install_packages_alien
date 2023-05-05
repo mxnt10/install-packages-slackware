@@ -1,0 +1,97 @@
+#!/bin/bash
+
+################################################################
+#                                                              #
+# Instalador e atualizador de pacotes do alienbob no Slackware #
+#                                                              #
+# By Mauricio Ferrari                                          #
+#                                                              #
+#                                                              #
+# Precisa ser root.                                            #
+#                                                              #
+################################################################
+
+
+[ $UID != 0 ] && { echo -e "\nExecute como Root !\n"; exit 1; }
+
+
+packages="vlc qemu"
+
+dir="_Packages"
+file="FILELIST.TXT"
+
+[ -e "../_ALIEN" ] && dir="../_ALIEN" || { mkdir -p "$dir"; chown 1000:users "$dir"; } # Isso aqui é pra mim
+
+cd "$dir"
+
+
+: "$(grep "VERSION_ID" /etc/os-release)"; slackver="${_#*=}"
+
+case "$(uname -m)" in
+    i?86) export ARCH=i586 ;;
+    arm*) export ARCH=arm  ;;
+       *) export ARCH=$(uname -m) ;;
+esac
+
+
+function down
+{
+    wget -c "$link0/$1"
+    chown 1000:users "$2"
+}
+
+link0="http://www.slackware.com/~alien/slackbuilds"
+
+[ ! -e "$file" ] && down "$file" "$file" || {
+
+    sam0="$(grep -E "$file" <(links -dump "$link0/CHECKSUMS.md5"))"
+    sam1="$(md5sum "$file")"
+
+    [ ${sam0%[ ]*} != ${sam1%[ ]*} ] && {
+
+        rm "$file"
+        down "$file" "$file"
+
+    }
+}
+
+cd "/var/log/packages"
+lst=$(printf "%s\n" *)
+cd -
+
+loop=0
+
+while [ $loop == 0 ]; do
+
+    loop=1
+    intermediario=""
+
+    for prg in $packages; {
+
+        pkg="$(grep -Eom1 "pkg[0-9]*[/]$slackver[/]$prg[-]([0-9]+[.])+[0-9]+[-]([aA-zZ]*[0-9]*[_]*)+$ARCH[-][0-9]+alien" "$file")"
+
+        test -n "$(grep -Eo "$pkg.dep" "$file")" && {
+
+            [ ! -e "${pkg##*[/]}.dep" ] && down "$prg/$pkg.dep" "${pkg##*[/]}.dep"
+
+            [ -e "${pkg##*[/]}.dep" ] && {
+
+                loop=0
+                intermediario="$intermediario $(< "${pkg##*[/]}.dep") "
+
+            } || continue
+        }
+
+        test -n "$(grep -Eo "${pkg##*[/]}" <<< "$lst")" && continue
+
+        down "$(grep -Eom1 $prg/$pkg[.]t[a-z]z "$file")" ${pkg##*[/]}.t?z
+
+        [ -e ${pkg##*[/]}.t?z ] && /sbin/upgradepkg --install-new ${pkg##*[/]}.t?z
+
+    }
+
+    [ $loop == 0 ] && packages="$intermediario"
+
+done
+
+exit 0

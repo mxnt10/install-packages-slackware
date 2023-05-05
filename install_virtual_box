@@ -7,10 +7,12 @@
 # By Mauricio Ferrari                                 #
 #                                                     #
 #                                                     #
-# Não precisa ser root.                               #
+# Precisa ser root.                                   #
 #                                                     #
 #######################################################
 
+
+[ $UID != 0 ] && { echo -e "\nExecute como Root !\n"; exit 1; }
 
 dir="_Packages"
 
