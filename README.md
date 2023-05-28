@@ -17,3 +17,6 @@
 
 Esses scripts foram feitos para instalar alguns pacotes no sistema que achei desnecessários gerar pacotes.
 Também tem scripts que fazem conversão de pacotes e que instalam pacotes pré-compilados.
+
+<b>E-Mail</b>: *m10ferrari1200@gmail.com*<br/>
+<b>Telegram</b>: *@maurixnovatrento*
