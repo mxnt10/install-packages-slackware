@@ -8,7 +8,6 @@
     <img src="https://img.shields.io/github/v/release/mxnt10/ckdeps?color=blue&label=Release%20Version&style=flat-square"/>
 </a>
 <img src="https://img.shields.io/github/last-commit/mxnt10/ckdeps?color=blue&label=Last%20Commit&style=flat-square"/>
-
 <img src="https://img.shields.io/github/release-date/mxnt10/ckdeps?color=blue&label=Release%20Date&style=flat-square"/>
 <img src="https://img.shields.io/github/repo-size/mxnt10/ckdeps?color=blue&label=Repo%20Size&style=flat-square"/>
 <a href="https://github.com/mxnt10/ckdeps/stargazers">
