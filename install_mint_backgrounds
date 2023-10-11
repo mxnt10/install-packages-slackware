@@ -38,6 +38,7 @@ for i in $list; {
 
     link1="$link0/$i"
 
+    echo "verify $link1"
     pkg=($(sort -nr <(grep -Eo "$i[_]([0-9]+[.])+[0-9]+[_]all[.]deb" <(links -dump "$link1"))))
 
     link2="$link1/${pkg[0]}"

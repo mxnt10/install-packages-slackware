@@ -15,7 +15,7 @@
 [ $UID != 0 ] && { echo -e "\nExecute como Root !\n"; exit 1; }
 
 
-packages="vlc qemu"
+packages="vlc qemu flatpak"
 
 dir="_Packages"
 file="FILELIST.TXT"

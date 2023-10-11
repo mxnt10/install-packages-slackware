@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#################################################
+#                                               #
+# Backup de pacotes txz instalados no Slackware #
+#                                               #
+# By Mauricio Ferrari                           #
+#                                               #
+#                                               #
+# Não precisa ser root.                         #
+#                                               #
+#################################################
+
+
+function old_file
+{
+    cd "/var/log/packages"
+    lst=$(printf "%s\n" *)
+
+    test -z "$(grep -E "^$1$" <<< "$lst")" && {
+        cd "$cwd"
+        [ ! -d "_old_version" ] && mkdir "_old_version"
+        mv "$1".t?z "_old_version"
+    }
+}
+export -f old_file
+
+
+dir="_Packages_Slackware"
+
+[ -e "../_Packages_Slackware" ] && dir="../_Packages_Slackware" || { mkdir -p "$dir"; chown 1000:users "$dir"; } # Isso aqui é pra mim
+
+cd "$dir"
+export cwd="$PWD"
+
+
+cd "/var/log/packages"
+lst=$(printf "%s\n" *)
+
+cd '/var/cache/slapt-get'
+find -iname '*.t?z' -type f -exec cp '{}' "$cwd" \;
+
+cd "$cwd"
+pkgs=$(printf "%s\n" *.t?z)
+
+
+echo "${pkgs//.t?z/}" | xargs -P $(nproc) -I {} bash -c 'old_file "$@"' _ {}
+exit 0
