@@ -15,15 +15,15 @@
 [ $UID != 0 ] && { echo -e "\nExecute como Root !\n"; exit 1; }
 
 
-packages="qemu flatpak chromaprint obs-studio"
+packages="ffmpeg vlc"
 
-exception="jack2" # Isso aqui é pra mim
+exception="" # Isso aqui é pra mim
 
 
 dir="_Packages"
 file="FILELIST.TXT"
 
-[ -e "../_ALIEN" ] && dir="../_ALIEN" || { mkdir -p "$dir"; chown 1000:users "$dir"; } # Isso aqui é pra mim
+[ -e "../_ALIEN_RESTRICTED" ] && dir="../_ALIEN_RESTRICTED" || { mkdir -p "$dir"; chown 1000:users "$dir"; } # Isso aqui é pra mim
 
 cd "$dir"
 
@@ -43,7 +43,7 @@ function down
     chown 1000:users $2
 }
 
-link0="http://www.slackware.com/~alien/slackbuilds"
+link0="https://slackware.uk/people/alien/restricted_slackbuilds"
 
 [ ! -e "$file" ] && down "$file" "$file" || {
 
@@ -88,11 +88,9 @@ while [ $loop == 0 ]; do
             } || continue
         }
 
-        test -n "$(grep -Eo "${pkg##*[/]}" <<< "$lst")" && continue
-
         down "$(grep -Eom1 $prg/$pkg[.]t[a-z]z "$file")" ${pkg##*[/]}.t?z
 
-        [ -e ${pkg##*[/]}.t?z ] && /sbin/upgradepkg --install-new ${pkg##*[/]}.t?z
+        [ -e ${pkg##*[/]}.t?z ] && /sbin/upgradepkg --install-new --reinstall ${pkg##*[/]}.t?z
 
     }
 

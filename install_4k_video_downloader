@@ -22,11 +22,9 @@ cd "$dir"
 
 cwd="$PWD"
 
-link0="https://www.4kdownload.com/pt-br/downloads/9#"
+link0="https://www.4kdownload.com/pt-br/downloads/9"
 
-head="90"
-
-version="$(grep -Eom1 "([0-9]+[.]){2}[0-9]+" <(head "-$head" <(links -dump "$link0")))"
+version="$(grep -Eom1 "([0-9]+[.]){2}[0-9]+" <(grep -A5 "4K Video Downloader+" <(links -dump "$link0")))"
 
 link1="https://dl.4kdownload.com/app/4kvideodownloaderplus_${version}_amd64.tar.bz2"
 link2="https://static.4kdownload.com/main/img/redesign/videodownloader.a855bb9dddb2.svg"
